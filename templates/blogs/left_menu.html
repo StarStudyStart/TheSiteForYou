@@ -1,0 +1,29 @@
+<div class="sidebar-block">
+    <h3>文章分类</h3>
+    <ul class="list-group">
+        {% for category in category_list %}
+        <li class="list-group-item"><a href="{% url 'blogs:filter' user_obj.username 'category' category.2  %}">{{ category.0 }} ({{ category.1 }})</a></li>
+        {% endfor %}
+    </ul>
+
+</div>
+
+<div class="sidebar-block">
+    <h3>我的标签</h3>
+    <ul class="list-group">
+        {% for tag in tag_list %}
+        <li class="list-group-item"><a href="{% url 'blogs:filter' user_obj.username 'tag'  tag.2  %}">{{ tag.0 }} ({{ tag.1 }})</a></li>
+        {% endfor %}
+     </ul>
+
+</div>
+
+<div class="sidebar-block">
+    <h3>随笔归档</h3>
+    <ul class="list-group">
+        {% for date in date_list %}
+        <li class="list-group-item" style="border-radius: 5px;"><a
+                href="{% url 'blogs:filter' user_obj.username 'archive'  date.0|date:'Y-m'  %}">{{ date.0 |date:"Y年m月" }} ({{ date.1 }})</a></li>
+        {% endfor %}
+    </ul>
+</div>

@@ -1,0 +1,33 @@
+{% extends 'blogs/base.html'%}
+{% block page_title%} SiteForYou {% endblock %}
+{% block brand %}
+YOU SITE
+{% endblock %}
+{% block content %}
+<!--# 博客列表-->
+<div class="container">
+    <ul class="media-list">
+        {% for blog in blog_queryset %}
+        <li class="media">
+            <h2 class="media-heading" style="margin-bottom:9px"><a href="{% url 'blogs:detail' blog.author blog.pk %}">{{ blog.title }}</a></h2>
+            <div class="media-left">
+                <a href="#">
+                    <img class="media-object" src="{{ blog.author.avatar.url }}" alt="..." width="80">
+                </a>
+            </div>
+            <div class="media-body">
+                {{ blog.excerpt }}
+            </div>
+        </li>
+        <br>
+        <span><a
+                href="{% url 'blogs:user_site' blog.author.username %}">{{ blog.author.username }}&nbsp;&nbsp;</a></span>
+        <span>{{ blog.create_time | date:'Y-m-d H:i' }}&nbsp;&nbsp;</span>
+        <span><span class="glyphicon glyphicon-thumbs-up" style="margin-right:4px"></span>{{ blog.up_num }} &nbsp;&nbsp;</span>
+        <span><span class="glyphicon glyphicon-comment" style="margin-right:4px"></span>{{ blog.comment_num }} &nbsp;&nbsp;</span>
+        <hr>
+        {% endfor %}
+
+    </ul>
+</div>
+{% endblock %}

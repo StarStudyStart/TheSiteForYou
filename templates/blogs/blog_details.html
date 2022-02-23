@@ -1,0 +1,240 @@
+{% extends 'blogs/base.html'%}
+{% load static %}
+# 个人站点样式
+{% block personal_style %}
+{{  cur_user_site.site_theme }}
+
+.content_border {
+    border: 1px solid #ccc;
+    border-radius: 16px;
+}
+
+{% endblock %}
+
+{% block page_title%} 主页 {% endblock %}
+{% block brand %}
+{{ username }}
+{% endblock %}
+{% block content %}
+<!--# 博客列表-->
+<div class="container-fluid">
+    <div class="row">
+        <!-- 标签、分类 -->
+        <div class="col-md-2">
+            {% load blogs_tag %}
+            {% left_menu username %}
+            <!-- 目录 -->
+            <div class="panel panel-default">
+                <div class="panel-heading">目录</div>
+                <div class="panel-body">
+                    {{ toc | safe }}
+                </div>
+            </div>
+
+        </div>
+        <!--        文章内容-->
+        <div class="col-md-10">
+            <h1>{{ blog.title }}</h1>
+            <div class="panel-body content_border" style="margin-bottom: 12px;">
+                {{ blog.content|safe }}
+            </div>
+            <link rel="stylesheet" type="text/css" href="{% static 'blogs/css/style.css' %}">
+            <!--            底部   点赞点踩-->
+            <div class="more-toolbox-new clearfix" id="toolBarBox">
+                <div class="left-toolbox"
+                     style="position: relative; z-index: 999; top:5px; bottom: 5px; width: 100%;">
+                    <!--                    头像+作者名-->
+                    <div class="toolbox-left">
+                        <div class="profile-box"><a class="profile-href" target="_blank" href="{% url 'blogs:user_site' blog.author.username %}"><img
+                                class="profile-img" src="{{ blog.author.avatar.url }}"><span class="profile-name">{{ blog.author.username }}</span></a>
+                        </div>
+                    </div>
+                    <div class="toolbox-right">
+                        <ul class="toolbox-list">
+                            <li class="tool-item tool-item-size tool-active">
+                                <div class="pull-right" id="error_msg" style="color:red;margin-right:40px"></div>
+                            </li>
+                            <!-- 点赞-->
+                            <li class="tool-item tool-item-size tool-active is-like action" id="is-like">
+                                <a class="tool-item-href">
+                                    <img class="isactive" style="display:none" id="is-like-imgactive"
+                                         src="{% static 'blogs/img/like_active.png' %}"
+                                         alt="">
+                                    <img class="isdefault" style="display:block" id="is-like-img"
+                                         src="{% static 'blogs/img/like_default.png' %}"
+                                         alt="">
+                                    <span id="likeCount" class="count " style="color: rgb(153, 154, 170);">{{ blog.up_num }}</span>
+                                </a>
+                                <div class="tool-hover-tip" id="up_error"><span class="text space">点赞</span></div>
+                            </li>
+                            <!-- 点踩-->
+                            <li class="tool-item tool-item-size tool-active is-unlike action" id="is-unlike">
+                                <a class="tool-item-href">
+                                    <img class="isactive" style="margin-right:0px;display:none"
+                                         id="is-unlike-imgactive"
+                                         src="{% static 'blogs/img/unlike_active.png'%}"
+                                         alt="">
+                                    <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img"
+                                         src="{% static 'blogs/img/unlike_default.png'%}"
+                                         alt="">
+                                    <span id="unlikeCount" class="count " style="color: rgb(153, 154, 170);">{{ blog.down_num }}</span>
+                                </a>
+                                <div class="tool-hover-tip" id="down_error"><span class="text space">踩</span></div>
+
+                            </li>
+                            <!-- 评论-->
+                            <li class="tool-item tool-item-size tool-active tool-item-comment">
+                                <a class="tool-item-href" href="#id_comment">
+                                    <img class="isdefault"
+                                         src="{% static 'blogs/img/comment.png' %}"
+                                         alt="">
+                                    <span class="count">0</span>
+                                </a>
+                                <div class="tool-hover-tip"><span class="text space">评论</span></div>
+                            </li>
+                            <!-- 收藏数-->
+                            <li class="tool-item tool-item-size tool-active is-collection ">
+                                <a class="tool-item-href" href="javascript:;" onclick=""
+                                   data-report-click="{&quot;mod&quot;:&quot;popu_824&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4130&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                                    <img class="isdefault" id="is-collection-img" style="display:block"
+                                         src="{% static 'blogs/img/collect_default.png' %}"
+                                         alt="">
+                                    <img class="isactive" id="is-collection-imgactive" style="display:none"
+                                         src="{% static 'blogs/img/collect_active.png' %}"
+                                         alt="">
+                                    <span class="count get-collection" id="get-collection">
+                0
+            </span>
+                                </a>
+                                <div class="tool-hover-tip"><span class="text space">收藏</span></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!--评论展示-->
+            <div id="comment_group" class="mg">
+                <div class="area_title">评论列表：</div>
+                <ul class="list-group">
+                    {% for comment in comment_list %}
+                    <li class="list-group-item">
+                        <p class="list-group-item-heading" style="padding:8xp;padding-right:7px">
+                            <span style="color:#337ab7">#{{ forloop.counter }}</span>
+                            <span style="margin-left:5px">{{ comment.comment_time |date:'Y-m-d h:i:s'}}</span>
+                            <span style="margin-left:5px"><a
+                                    href="{% url 'blogs:user_site'  comment.comment_user %}">{{  comment.comment_user }}</a></span>
+                            <span class="pull-right reply" cm_id="{{ comment.pk }}" username="{{ comment.comment_user }}"><a href="#id_comment">回复</a></span>
+                        </p>
+                        <h4 class="list-group-item-text">{{ comment.content }}</h4>
+                        {% if comment.child_cm %}
+                        <h4 class="list-group-item-text" style="margin-left:10px">{{ comment.child_cm.content }}</h4>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+            <!-- 评论结束-->
+            <!--评论-->
+            <div class="mg">
+                <span class="glyphicon glyphicon-comment"></span>&nbsp;<span>发表评论:</span>
+                <div style="margin:5px 0px">
+                    <textarea class="form-control" rows="3" cols="3" id="id_comment" name="comment"></textarea>
+                </div>
+                <button id="submit_comment" class="btn btn-primary pull-right" style="margin-bottom:10px">提交评论</button>
+            </div>
+            <!--评论结束-->
+
+        </div>
+
+    </div>
+</div>
+
+</div>
+{% endblock %}
+
+{% block script %}
+
+<script>
+// 回调函数
+$(function() {
+    //  点赞点踩的逻辑
+    $('.action').click(function (){
+        var is_up = $(this).hasClass('is-like')
+        console.log(is_up)
+        $.ajax({
+            url:'{% url 'blogs:up_or_down' %}',
+            type:'post',
+            data: {
+                'is_up':is_up,
+                'blog_id':{{ blog.pk }},
+                'csrfmiddlewaretoken':'{{ csrf_token }}',
+            },
+            success: function(args) {
+                console.log(args)
+                if (args.code == 1001) {
+                // 点赞成功
+                    $('#is-like-imgactive').css('display', 'block')
+                    $('#is-like-img').css('display', 'none');
+                    old_num = Number($('#likeCount').text())
+                    $('#likeCount').text(old_num + 1)
+                // 点踩成功
+                } else if (args.code == 1002){
+                    $('#is-unlike-imgactive').css('display', 'block')
+                    $('#is-unlike-img').css('display', 'none');
+                    old_num = Number($('#unlikeCount').text())
+                    $('#unlikeCount').text(old_num + 1)
+                // 未登录
+                } else if (args.code == 1005) {
+                    $('#error_msg').css('display','block')
+                    $('#error_msg').html(args.msg)
+                // 其他 1003==重复操作 1005 不能给自己的文章点赞
+                } else {
+                    $('#error_msg').css('display','block')
+                    $('#error_msg').text(args.msg)
+                    setTimeout(function () {
+                        $('#error_msg').css('display','none')
+                    }, 5000);
+                }
+            }
+        });
+    });
+    var parentId = null;
+    // 提交评论
+    $('#submit_comment').click(function () {
+        let content = $('#id_comment').val();
+        $.ajax({
+            url:'{% url 'blogs:comment' %}',
+            type: 'post',
+            data: {
+                'blog_id': {{ blog_id }},
+                'cm_content': content,
+                'parentId': parentId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            // 回调函数
+            success: function(args) {
+                if (args.code == 1000){
+                    // 评论渲染
+                    console.log(args.msg)
+                    $('#comment_group').append(args.msg);
+                }
+            }
+        });
+    })
+
+    // 父评论
+    $('.reply').click(function (){
+        parentId = $(this).attr('cm_id')
+        var username = $(this).attr('username')
+        $('#id_comment').val('@' + username + ': \n');
+    });
+});;
+
+
+
+
+
+</script>
+
+{% endblock %}

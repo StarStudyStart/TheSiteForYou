@@ -1,0 +1,22 @@
+{% extends 'blogs/backend/base.html' %}
+
+{% block backend_content %}
+<div class="page-header">
+    <h1>添加分类：</h1>
+</div>
+<div role="tabpanel" class="tab-pane active" id="category">
+    <form class="form" action="{% url 'blogs:new_category' %}" method="post"
+          enctype="application/x-www-form-urlencoded">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            {{ field.errors.0 }}
+            {{ field }}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">保存</button>
+    </form>
+</div>
+{% endblock %}

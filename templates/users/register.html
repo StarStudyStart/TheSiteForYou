@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <!--    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css">-->
+    <!--    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>-->
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1 class="text-center">用户注册</h1>
+    </div>
+
+    <div>
+        <form action="{% url 'users:register' %}" method="post" class="form" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in register_form %}
+            <div class="form-group">
+                <label class="control-label">{{ field.label }}</label>
+                {{ field }}
+                {%  if field.errors.0 %}
+                <span style="color: red; text-size:12px" class="pull-right">{{ field.errors.0}}</span>
+                {% else %}
+<!--                帮助文档-->
+                    {% if field.help_text %}
+                    <div class="help-block">
+                        <ul>
+                            {% for help in field.help_text %}
+                            <li> {{ help }} </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif%}
+                {% endif %}
+            </div>
+            {% endfor %}
+<!--            用户头像上传-->
+            <div class="form-group">
+                <label class="control-label" for="myfile">头像
+                {% load static%}
+                <img src="{% static 'users/default.jpg' %}" id="myimg" width="80px" style="margin-left: 20px">
+                </label>
+                <input type="file" id="myfile" name="avatar" style="display: None">
+            </div>
+
+            <input type="submit" class="btn btn-primary" id="commit" value="注册">
+        </form>
+    </div>
+</div>
+
+</div>
+<script>
+// 上传头像后，本地显示缩略图
+$(function(){
+    $('#myfile').change(function(){
+        // 路径->fileObj.URL->FileReader()->file
+        // 实例化文件阅读器
+        let fileReadeObj = new FileReader();
+        // 获取当前文件
+        let fileObj = $(this)[0].files[0];
+        fileReadeObj.readAsDataURL(fileObj);
+        // 回调函数中改变img的src属性
+        fileReadeObj.onload = function (){
+            $('#myimg').attr('src', fileReadeObj.result)
+        };
+    });
+});
+</script>
+</body>
+</html>

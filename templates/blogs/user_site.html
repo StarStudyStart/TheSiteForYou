@@ -1,0 +1,59 @@
+{% extends 'blogs/base.html'%}
+
+# 个人站点样式
+{% block personal_style %}
+{{  cur_user_site.site_theme }}
+{% endblock %}
+
+{% block page_title%} 主页 {% endblock %}
+{% block brand %}
+{{ username }}
+{% endblock %}
+{% block content %}
+<!--# 博客列表-->
+<div class="container-fluid" style="margin-top:10px;">
+    <div class="row">
+        <!--       标签、分类 -->
+        <div class="col-md-2">
+            {% load blogs_tag %}
+            {% left_menu username %}
+        </div>
+        <!--        user博客列表-->
+        <div class="col-md-10">
+            {% if blog_list %}
+            <ul class="media-list">
+                {% for blog in blog_list %}
+                <li class="media">
+                    <h2 class="media-heading" style="margin-bottom:9px"><a href="{% url 'blogs:detail' blog.author blog.pk %}">{{ blog.title }}</a></h2>
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" src="{{ blog.author.avatar.url }}" alt="..." width="80">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        {{ blog.excerpt }}
+                    </div>
+                </li>
+                <br>
+<!--                posted @ 2022-01-14 19:59 捉虫大师 评论(0) 推荐(0) 编辑-->
+                <div class="pull-right">
+                <span>posted&nbsp;@&nbsp;{{ blog.create_time | date:'Y-m-d H:i' }}&nbsp;&nbsp;</span>
+                <span>{{ blog.author.username }}&nbsp;&nbsp;</span>
+                <span><span class="glyphicon glyphicon-thumbs-up" style="margin-right:4px"></span>{{ blog.up_num }} &nbsp;&nbsp;</span>
+                <span><span class="glyphicon glyphicon-comment" style="margin-right:4px"></span>{{ blog.comment_num }} &nbsp;&nbsp;</span>
+                <span><a href="#">编辑&nbsp;&nbsp;</a></span>
+                </div>
+                <br>
+                <hr>
+                {% endfor %}
+                {% else %}
+                <div class="jumbotron center-block" style="padding-bottom:55%">
+                    <p class="pull-center">这个人很懒，什么都没有留下</p>
+                </div>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

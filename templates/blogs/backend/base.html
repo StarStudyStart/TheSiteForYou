@@ -1,0 +1,56 @@
+{% extends 'blogs/base.html'%}
+{% load static %}
+# 个人站点样式
+{% block personal_style %}
+.addlink {
+    padding-left: 16px;
+    background: url("{% static 'blogs/img/icon-addlink.svg' %}") 0 1px no-repeat;
+}
+
+{% endblock %}
+
+{% block page_title%} 后台管理 {% endblock %}
+{% block brand %}
+{{ user.username }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                               aria-expanded="false" aria-controls="collapseOne">
+                                更多操作
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                         aria-labelledby="headingOne">
+                        <div class="panel-body" style="padding:0px">
+                            <ul id="more_article" class="list-group" style="margin-bottom:0px;">
+                                <li class="list-group-item"><a href="{% url 'blogs:new_blog' %}">添加文章</a></li>
+                                <li class="list-group-item"><a href="{% url 'blogs:new_category' %}">添加分类</a></li>
+                                <li class="list-group-item"><a href="{% url 'blogs:new_tag' %}">添加标签</a></li>
+                                <li class="list-group-item"><a href="{% url 'blogs:backend' %}">返回后台列表</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            {% block backend_content %}
+            {% endblock%}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+</script>
+{% endblock %}

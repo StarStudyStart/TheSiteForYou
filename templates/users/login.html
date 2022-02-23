@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="page-header">
+        <h1 class="text-center">用户登录</h1>
+    </div>
+
+    <div>
+<!--        注册表单-->
+        <form action="{% url 'users:login' %}" method="post" class="form" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in login_form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors.0 %}
+                <span style="color: red; text-size:12px" class="pull-right">{{ field.errors.0}}</span>
+                {% else %}
+                {% if field.help_text %}
+<!--                帮助文档-->
+                <div class="help-block">
+                    <ul>
+                        {% for help in field.help_text %}
+                        <li> {{ help }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif%}
+                {% endif %}
+            </div>
+            {% endfor %}
+<!--            验证码字段-->
+            <div class="form-group">
+                <label for="validate">验证码</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="valid_code" id="validate">
+                    </div>
+                    <div class="col-md-6">
+                        {% load static %}
+                        <img src="{% url 'users:get_code' 0 %}" class="form-control" style="padding:0px 0px" id="valid_code">
+                    </div>
+
+                </div>
+                {% if login_form.valid_error %}
+                <span style="color: red" class="pull-right">{{ login_form.valid_error }}</span>
+                {% endif %}
+
+            </div>
+            <input type="submit" class="btn btn-success" id="commit" value="登录">
+<!--            登录成功后的跳转url-->
+            <input type="hidden" name="next" value="{{ next|escape}}">
+        </form>
+    </div>
+</div>
+<script>
+// 点击验证码图片切换，验证码
+$(function() {
+    var i = 0
+    $('#valid_code').click(function(){
+        i += 1
+        var link = $(this).attr('src')
+        link = '/users/get_code/' + i.toString()
+        $(this).attr('src', link)
+    })
+})
+</script>
+</body>
+</html>
